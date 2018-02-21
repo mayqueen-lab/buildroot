@@ -24,7 +24,6 @@
 ::sysinit:/etc/init.d/rcS
 
 # Put a getty on the serial port
-z6::respawn:/sbin/sulogin
 ttymxc0::respawn:/sbin/getty -L  ttymxc0 0 vt100 # GENERIC_SERIAL
 tty1::respawn:/sbin/getty 38400 tty1
 
