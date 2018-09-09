@@ -1,0 +1,42 @@
+#!/bin/bash
+
+NAND_FOLDER="/nand"
+
+led_process() {
+	echo 0 > /sys/class/edm/gpio/GPIO_LED2/value
+	while true
+	do
+		echo 0 > /sys/class/edm/gpio/GPIO_LED2/value
+		sleep 0.2
+		echo 1 > /sys/class/edm/gpio/GPIO_LED2/value
+		sleep 0.2
+	done
+}
+
+led_done() {
+echo test
+}
+
+mount -t debugfs debugfs /sys/kernel/debug
+led_process &
+
+# --------- flash u-boot --------- #
+flash_erase /dev/mtd0 0 0
+kobs-ng init -x -v "$NAND_FOLDER"/u-boot.imx
+sync
+# --------- flash kernel --------- #
+flash_erase /dev/mtd1 0 0
+nandwrite -p /dev/mtd1 "$NAND_FOLDER"/zImage
+sync
+# --------- flash dtb --------- #
+flash_erase /dev/mtd2 0 0
+nandwrite -p /dev/mtd2 "$NAND_FOLDER"/imx6ul-panzer.dtb
+sync
+# --------- flash rootfs --------- #
+flash_erase /dev/mtd3 0 0
+ubiformat /dev/mtd3 -f "$NAND_FOLDER"/ubi.img -s 2048 -O 2048
+sync
+
+kill -9 $!
+
+echo 1 > /sys/class/edm/gpio/GPIO_LED2/value
