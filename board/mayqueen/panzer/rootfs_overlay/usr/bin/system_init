@@ -1,0 +1,21 @@
+#!/bin/sh
+
+PPP_PID="init"
+
+run_lte(){
+while true
+do
+        sleep 15
+
+        if [[ "$(ifconfig | grep ppp0)" == "" ]]; then
+                kill -9 $PPP_PID
+                pppd call vzw-GELS3 &
+                PPP_PID=$(ps aux | grep pppd | head -1 | awk  '{print $2}')
+        fi
+done
+}
+
+echo '1508 1001' > /sys/bus/usb-serial/drivers/option1/new_id
+ifconfig eth0 up
+echo 1 > /sys/class/edm/gpio/USB_OTG2/value
+run_lte &

@@ -1,0 +1,14 @@
+debug
+nodetach
+/dev/ttyUSB2
+115200
+usepeerdns
+noauth
+noipdefault
+novj
+novjccomp
+noccp
+defaultroute
+ipcp-accept-local
+ipcp-accept-remote
+connect '/usr/sbin/chat -s -v -f /etc/ppp/peers/vzw-GELS3-chat'
